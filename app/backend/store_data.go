@@ -12,14 +12,14 @@ import (
 func StoreToDynamoDB(data []Transformed_data) error {
 	cfg, err := config.LoadDefaultConfig(context.TODO(),
 		config.WithRegion("us-west-2"),
-		config.WithEndpointResolver(aws.EndpointResolverFunc(
-			func(service, region string) (aws.Endpoint, error) {
-				return aws.Endpoint{
-					URL:           "http://dynamodb-local:8000", // DynamoDB Local endpoint
-					SigningRegion: "us-west-2",
-				}, nil
-			},
-		)),
+		// config.WithEndpointResolver(aws.EndpointResolverFunc(
+		// 	func(service, region string) (aws.Endpoint, error) {
+		// 		return aws.Endpoint{
+		// 			URL:           "http://dynamodb-local:8000", // DynamoDB Local endpoint
+		// 			SigningRegion: "us-west-2",
+		// 		}, nil
+		// 	},
+		// )),
 	)
 	if err != nil {
 		return fmt.Errorf("unable to load SDK config: %w", err)
