@@ -1,8 +1,8 @@
 FROM golang:1.22.2 AS go_image
 WORKDIR /cyderes_app
-COPY go.mod ./
+COPY ./go.mod ./
 # RUN go mod download
-COPY ./app/backend/. .
+COPY . .
 #RUN go build -o main .
 #FROM alpine:latest
 #WORKDIR /root/

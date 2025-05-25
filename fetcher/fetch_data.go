@@ -1,6 +1,7 @@
-package main
+package fetcher
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 	"io"
@@ -16,6 +17,7 @@ func FetchData()([]byte, error){
 		response, err = http.Get(api_url)
 		if err == nil && response.StatusCode == http.StatusOK {
 			defer response.Body.Close()
+			fmt.Println("Successfully fetched data with status:", response.StatusCode)
 			return io.ReadAll(response.Body)
 		}
 		time.Sleep(2 * time.Second) 

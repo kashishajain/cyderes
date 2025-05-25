@@ -1,4 +1,4 @@
-module github.com/kashishajain/cyderes-app/app/backend
+module github.com/kashishajain/cyderes-app
 
 go 1.22.2
 
