@@ -1,6 +1,6 @@
 FROM golang:1.23 AS go_image
 WORKDIR /cyderes_app
-COPY ./app/backend/go.mod ./
+COPY go.mod ./
 # RUN go mod download
 COPY ./app/backend/. .
 #RUN go build -o main .
