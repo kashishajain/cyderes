@@ -15,4 +15,4 @@ jobs:
       - name: Run tests
         run: go test ./...
       - name: Build Docker image
-        run: docker build . -t cyderes-app:latest
+        run: docker build . -t cyderes-app:latest -f build/docker/Dockerfile
