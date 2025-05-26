@@ -10,17 +10,17 @@ This service fetches posts from the JSONPlaceholder API, transforms each record 
 1. **Fetcher**: HTTP client with retry and fetches data from `https://jsonplaceholder.typicode.com/posts`.
 2. **Transformer**: Adds UTC timestamp `ingested_at` and static `source` field.
 3. **Storage**: Writes each transformed item into DynamoDB table `cyderes_api_logs`.
-4. **Containerization**: Dockerfile builds the Go binary; `docker-compose.yml` spins up the service.
+4. **Containerization**: `Dockerfile` OR `docker-compose.yml` spins up the service.
 5. **Testing**:
 
    * Unit tests for transformation logic.
-   * Unit tests for fetch_data using httptest
+   * Unit tests for fetch_data using httptest.
    * End to end Integration tests against DynamoDB Local via Docker.
 
 
 ## Storage Justification
 
-* **Amazon DynamoDB**: a fully managed NoSQL database optimized for high-throughput writes and key-value/JSON data. It auto-scales, has a free tier, and the AWS SDK for Go v2 provides seamless integration. It fits moderately structured logs with simple primary-key lookups. Trade-offs: cost can rise under heavy read/write loads, but our moderate volume keeps it economical.
+* **Amazon DynamoDB**: A fully managed NoSQL database optimized for high-throughput writes and key-value/JSON data. It auto-scales, has a free tier, and the AWS SDK for Go v2 provides seamless integration. It fits moderately structured logs with simple primary-key lookups. Trade-offs: cost can rise under heavy read/write loads, but our moderate volume keeps it economical.
 
 ---
 
@@ -31,7 +31,7 @@ This service fetches posts from the JSONPlaceholder API, transforms each record 
 * Docker & Docker Compose
 * Go 1.20+
 * AWS CLI (for `aws configure`, optional)
-* Create IAM role configured with required DynamoDB policies. 
+* Create IAM role configured with required DynamoDB policies (AmazonDynamoDBFullAcess). 
 * AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
 
 ### 1. Clone & Build
@@ -41,26 +41,22 @@ git clone <repo-url>
 cd cyderes
 ```
 
-### 2. Build docker image
+### 2. Export Env variables
 
-```bash
-docker build -f build/docker/Dockerfile -t cyderes-app:1.1 .
-```
-
-### 3. Export Env variables
 ```bash
 export ACCESS_KEY_ID=<access_key_id>
 export SECRET_ACCESS_KEY=<secret_access_key>
 ```
 
-
-### 4. Start service using docker conatiner
+### 3. Build docker image & Start service using docker conatiner
 
 ```bash
+docker build -f build/docker/Dockerfile -t cyderes-app:1.1 .
 docker run --env AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY cyderes-app:1.1
 ```
 
-### 5. OR run service using docker-compose.yml
+### OR 
+### Run service using docker-compose.yml
 
 ```bash
 AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY docker compose -f ./build/docker/docker-compose.yml up
@@ -90,7 +86,6 @@ AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY docker
 
 ## Hardest Parts
 
-* Handling AWS SigV4 signatures manually (avoided by using AWS SDK)
 * Testing integration with a real database (solved via DynamoDB Local)
 * Managing environment-specific configs in Docker Compose
 
