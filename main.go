@@ -37,7 +37,7 @@ func main() {
 	log.Printf("Fetched %d items from DynamoDB\n", len(db_data))
 	log.Println("Displaying first 10 items:")
     for i, item := range db_data {
-	if i> 10 {
+	if i> 9 {
 		break // Limit output to first 10 items
 	}
     var decoded transformer.Transformed_data

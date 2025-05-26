@@ -69,7 +69,7 @@ func CreateDynamoDBTable() error {
         return fmt.Errorf("Failed to create dynamodb table: %w", err)
     }
     log.Println("Waiting for table to be created...")
-    time.Sleep(5 * time.Second) 
+    time.Sleep(20 * time.Second) 
     log.Println("Table Successfully created in Database:", tableName) 
     return nil
 }
