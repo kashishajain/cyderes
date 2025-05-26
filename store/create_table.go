@@ -70,6 +70,6 @@ func CreateDynamoDBTable() error {
     }
     log.Println("Waiting for table to be created...")
     time.Sleep(5 * time.Second) 
-    log.Println("Table Successfully created in Database: ", tableName) 
+    log.Println("Table Successfully created in Database:", tableName) 
     return nil
 }
