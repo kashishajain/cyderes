@@ -60,6 +60,6 @@ func TestFetchData_Timeout(t *testing.T) {
 
 	_, err := FetchData()
 	if err == nil {
-		t.Fatal("Expected timeout error, got nil")
+		t.Fatal("Expected timeout error,but got nil")
 	}
 }
