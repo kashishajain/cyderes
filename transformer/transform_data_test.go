@@ -1,7 +1,7 @@
 package transformer
 
 import (
-    "fmt"
+    "log"
     "testing"
     "time"
     "github.com/stretchr/testify/assert"
@@ -22,7 +22,7 @@ func TestTransform(t *testing.T) {
 
     //result := []transformer.Transformed_data{}
     result, err := TransformData(input)
-    fmt.Println(result)
+    log.Println(result)
     assert.Equal(t, orig[0].UserID, result[0].UserID)
     assert.Equal(t, orig[0].ID, result[0].ID)
     assert.Equal(t, orig[0].Title, result[0].Title)

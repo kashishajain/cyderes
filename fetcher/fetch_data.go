@@ -9,12 +9,25 @@ import (
 )
 
 func FetchData()([]byte, error){
-	retry := 5
-	api_url := "https://jsonplaceholder.typicode.com/posts"
-	var response *http.Response
+	const (
+		retry  = 5
+		timeout = 10 * time.Second
+		apiURL = "https://jsonplaceholder.typicode.com/posts"
+	)
+
+	client := &http.Client{
+		Timeout: timeout,
+	}
+	
 	var err error
 	for attempts := 0; attempts < retry; attempts++ {
-		response, err = http.Get(api_url)
+		req, reqErr := http.NewRequest(http.MethodGet, apiURL, nil)
+		if reqErr != nil {
+			log.Println("Failed to create request:", reqErr)
+			return nil, reqErr
+		}
+
+		response, err := client.Do(req)
 		if err == nil && response.StatusCode == http.StatusOK {
 			defer response.Body.Close()
 			log.Println("Successfully fetched data with status:", response.StatusCode)
