@@ -31,7 +31,8 @@ This service fetches posts from the JSONPlaceholder API, transforms each record 
 * Docker & Docker Compose
 * Go 1.20+
 * AWS CLI (for `aws configure`, optional)
-* IAM role configured with requir
+* Create IAM role configured with required DynamoDB policies. 
+* AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
 
 ### 1. Clone & Build
 
@@ -46,114 +47,36 @@ cd cyderes
 docker build -f build/docker/Dockerfile -t cyderes-app:1.1 .
 ```
 
-### 3. Start service using docker conatiner
+### 3. Export Env variables
+```bash
+export ACCESS_KEY_ID=<access_key_id>
+export SECRET_ACCESS_KEY=<secret_access_key>
+```
+
+
+### 4. Start service using docker conatiner
 
 ```bash
-docker run --env AWS_ACCESS_KEY_ID=<access_key_id> --env AWS_SECRET_ACCESS_KEY=<secret_access_key> cyderes-app:1.1
+docker run --env AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY cyderes-app:1.1
 ```
 
-### 4. OR run service using docker-compose.yml
+### 5. OR run service using docker-compose.yml
 
 ```bash
-AWS_ACCESS_KEY_ID=<access_key_id> AWS_SECRET_ACCESS_KEY=<secret_access_key> docker compose -f ./build/docker/docker-compose.yml up
-```
-
-### 5. Observe Logs
-
-```bash
-docker-compose logs -f service
+AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY docker compose -f ./build/docker/docker-compose.yml up
 ```
 
 ---
 
-## Dockerfile
-
-```dockerfile
-FROM golang:1.20-alpine AS builder
-WORKDIR /app
-COPY go.mod go.sum ./
-RUN go mod download
-COPY . .
-RUN go build -o ingest main.go
-
-FROM alpine:3.17
-WORKDIR /root/
-COPY --from=builder /app/ingest .
-CMD ["./ingest"]
-```
-
----
-
-## docker-compose.yml
-
-```yaml
-version: '3.8'
-services:
-  dynamodb:
-    image: amazon/dynamodb-local
-    container_name: dynamodb_local
-    ports:
-      - "8000:8000"
-  service:
-    build: .
-    environment:
-      - AWS_REGION=us-east-1
-      - AWS_ENDPOINT_URL=http://dynamodb:8000
-    depends_on:
-      - dynamodb
-```
-
----
-
-## Configuration
-
-* **AWS\_ENDPOINT\_URL**: override endpoint for local DynamoDB
-* **AWS\_REGION**: AWS region
-* **TABLE\_NAME**: DynamoDB table (default `Logs`)
-
----
-
-## Testing
-
-### Unit Tests
-
-File: `transformer/transformer_test.go`
-
-```go
-package transformer
-import (
-  "testing"
-  "time"
-)
-func TestTransformData(t *testing.T) {
-  raw := []byte(`[{"userId":1,"id":2,"title":"t","body":"b"}]`)
-  out, err := TransformData(raw)
-  if err != nil {
-    t.Fatalf("unexpected error: %v", err)
-  }
-  if len(out) != 1 {
-    t.Errorf("expected 1 record, got %d", len(out))
-  }
-  if out[0].Source != "placeholder_api" {
-    t.Errorf("unexpected source: %s", out[0].Source)
-  }
-}
-```
-
-### Integration Tests
-
-* Use Docker Compose to bring up DynamoDB Local
-* In `tests/integration_test.go`, point AWS\_ENDPOINT\_URL at localhost:8000, call `StoreToDynamoDB`, then use AWS SDK to `Scan` the table and assert record count.
-
----
 
 ## Documentation
 
 * **API Endpoint**: none (CLI application) by default
-* **Transformation Logic**: see `internal/transformer/transformer.go`
+* **Transformation Logic**: see `/transformer/transform_data.go`
 * **DB Schema**:
 
-  * Partition key: `id` (Number)
+  * Partition key: `userID` (Number)
+  * Sort key: `id`
   * Attributes: `userId`, `title`, `body`, `ingested_at`, `source`
 
 ---
@@ -161,8 +84,7 @@ func TestTransformData(t *testing.T) {
 ## Trade-offs
 
 * **DynamoDB vs S3**: Chose DynamoDB for per-item writes and querying; S3 would require batch files and ETL.
-* **Localstack vs DynamoDB Local**: Used DynamoDB Local for simplicity; localstack supports more AWS services.
-* **Exponential backoff**: simple linear backoff implemented; a library (e.g., backoff) could provide jitter.
+* **DynamoDB Local**: Used DynamoDB Local for end to end integration test.
 
 ---
 
@@ -176,34 +98,10 @@ func TestTransformData(t *testing.T) {
 
 ## Future Improvements
 
-* Batch writes with `BatchWriteItem` for performance
-* Add REST API (Gin or Echo) to expose ingested data
-* Implement CI/CD with GitHub Actions for build, test, and deploy
+* Add REST API to expose ingested data
 * Add monitoring and alerting (CloudWatch, Prometheus)
+* Updating github actions workflow to push the image on registry and deploy it to EC2 or lambda function.
 
 ---
 
-## Bonus: CI/CD with GitHub Actions
-
-```yaml
-name: CI
-on: [push]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
-        with:
-          go-version: '1.20'
-      - name: Install dependencies
-        run: go mod download
-      - name: Run tests
-        run: go test ./...
-      - name: Build Docker image
-        run: docker build . -t data-ingest:latest
-```
-
----
-
-*End of README*
+End of README
