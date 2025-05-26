@@ -10,9 +10,23 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: '1.22.2'
+
       - name: Install dependencies
         run: go mod download
       - name: Run tests
         run: go test ./...
+
+      - name: Start DynamoDB Local container
+        run: |
+          docker run -d -p 8000:8000 --name dynamodb-local amazon/dynamodb-local
+          sleep 5  # optional: wait for service to initialize
+
+      - name: Run integration tests
+        run: go test ./test/...
+
+      - name: Stop DynamoDB Local container
+        if: always()
+        run: docker stop dynamodb-local && docker rm dynamodb-local
+
       - name: Build Docker image
         run: docker build . -t cyderes-app:latest -f build/docker/Dockerfile

@@ -2,7 +2,9 @@ package store
 
 import (
     "context"
+    "log"
     "fmt"
+    "time"
     "github.com/aws/aws-sdk-go-v2/aws"
     "github.com/aws/aws-sdk-go-v2/config"
     "github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -23,12 +25,21 @@ func CreateDynamoDBTable() error {
         // )),
     )
     if err != nil {
-        return fmt.Errorf("unable to load SDK config: %w", err)
+        return fmt.Errorf("Unable to load SDK config: %w", err)
+    }
+    tableName := "cyderes_api_logs"
+    client := dynamodb.NewFromConfig(cfg)
+
+     _, err = client.DescribeTable(context.TODO(), &dynamodb.DescribeTableInput{
+        TableName: aws.String(tableName),
+    })
+    if err == nil {
+        log.Println("Table already exists:", tableName)
+        return nil
     }
 
-    client := dynamodb.NewFromConfig(cfg)
     _, err = client.CreateTable(context.TODO(), &dynamodb.CreateTableInput{
-        TableName: aws.String("cyderes_api_logs"),
+        TableName: aws.String(tableName),
         AttributeDefinitions: []types.AttributeDefinition{
             {
                 AttributeName: aws.String("userId"),
@@ -55,8 +66,10 @@ func CreateDynamoDBTable() error {
         },
     })
     if err != nil {
-        return fmt.Errorf("failed to create table: %w", err)
+        return fmt.Errorf("Failed to create dynamodb table: %w", err)
     }
-    fmt.Println("Table created!")
+    log.Println("Waiting for table to be created...")
+    time.Sleep(5 * time.Second) 
+    log.Println("Table Successfully created in Database: ", tableName) 
     return nil
 }

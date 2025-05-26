@@ -1,7 +1,7 @@
 package fetcher
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"time"
 	"io"
@@ -17,14 +17,14 @@ func FetchData()([]byte, error){
 		response, err = http.Get(api_url)
 		if err == nil && response.StatusCode == http.StatusOK {
 			defer response.Body.Close()
-			fmt.Println("Successfully fetched data with status:", response.StatusCode)
+			log.Println("Successfully fetched data with status:", response.StatusCode)
 			return io.ReadAll(response.Body)
 		}
 		time.Sleep(2 * time.Second) 
+		log.Println("Retrying after 2 seconds!! API failed with error:", err)
 	}
-
 	if err != nil {
 		return nil, err
 	}
-	return nil, errors.New("failed to fetch data after retries")
+	return nil, errors.New("Failed to fetch data after retries")
 }

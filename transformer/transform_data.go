@@ -3,6 +3,7 @@ package transformer
 import (
 	"encoding/json"
 	"time"
+	"log"
 )
 
 type Original_data struct {
@@ -42,6 +43,7 @@ func TransformData(data []byte) ([]Transformed_data, error){
 		}
 		transformed_data = append(transformed_data, td)
 	}
+	log.Println("Successfully transformed data. Added UTC stamp, source string in Original Data.")
 	return transformed_data, nil
 
 	

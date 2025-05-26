@@ -1,4 +1,4 @@
-package main
+package transformer
 
 import (
     "fmt"
@@ -6,11 +6,10 @@ import (
     "time"
     "github.com/stretchr/testify/assert"
     "encoding/json"
-    "github.com/kashishajain/cyderes-app/transformer"
 )
 
 func TestTransform(t *testing.T) {
-    orig := []transformer.Original_data{
+    orig := []Original_data{
         {
         UserID: 1,
         ID:     101,
@@ -22,7 +21,7 @@ func TestTransform(t *testing.T) {
     assert.NoError(t, err)
 
     //result := []transformer.Transformed_data{}
-    result, err := transformer.TransformData(input)
+    result, err := TransformData(input)
     fmt.Println(result)
     assert.Equal(t, orig[0].UserID, result[0].UserID)
     assert.Equal(t, orig[0].ID, result[0].ID)

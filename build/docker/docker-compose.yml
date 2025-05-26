@@ -1,22 +1,22 @@
 version: '3.8'
 
 services:
-  #dynamodb-local:
-   # image: amazon/dynamodb-local
-    #container_name: dynamodb-local
-    #ports:
-     # - "8000:8000"
-    #volumes:
-      #- ./dynamodb-data:/home/dynamodblocal/data
+  dynamodb-local:
+    image: amazon/dynamodb-local
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
   
   app:
-    build: .
+    build: 
+      context: ../../
+      dockerfile: build/docker/Dockerfile
     container_name: cyderes-app
     environment:
-      - AWS_ACCESS_KEY_ID=dummy
-      - AWS_SECRET_ACCESS_KEY=dummy
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=us-west-2
-    #depends_on:
-      #- dynamodb-local
-    #ports:
-      #- "8080:8080"
+    depends_on:
+      - dynamodb-local
+    ports:
+      - "8080:8080"

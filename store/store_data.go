@@ -3,11 +3,13 @@ package store
 import (
 	"context"
 	"fmt"
+	"log"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/kashishajain/cyderes-app/transformer"
+
 )
 
 func StoreToDynamoDB(data []transformer.Transformed_data) error {
@@ -23,7 +25,7 @@ func StoreToDynamoDB(data []transformer.Transformed_data) error {
 		// )),
 	)
 	if err != nil {
-		return fmt.Errorf("unable to load SDK config: %w", err)
+		return fmt.Errorf("Unable to load SDK config: %w", err)
 	}
 
 	client := dynamodb.NewFromConfig(cfg)
@@ -43,9 +45,9 @@ func StoreToDynamoDB(data []transformer.Transformed_data) error {
 		})
 
 		if err != nil {
-			return fmt.Errorf("failed to put item: %w", err)
+			return fmt.Errorf("Failed to put item: %w", err)
 		}
 	}
-
+	log.Println("Data stored in DynamoDB successfully.")
 	return nil
 }

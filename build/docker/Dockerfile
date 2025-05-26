@@ -1,10 +1,10 @@
-FROM golang:1.22.2 AS go_image
+FROM golang:1.22.2 AS builder
 WORKDIR /cyderes_app
-COPY ./go.mod ./
-# RUN go mod download
+COPY go.mod go.sum ./
+RUN go mod download
 COPY . .
-#RUN go build -o main .
-#FROM alpine:latest
-#WORKDIR /root/
-#COPY --from=go_image /cyderes_app/main .
-CMD ["go", "run", "."]
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ingestlog main.go
+FROM alpine:latest
+WORKDIR /cyderes_app
+COPY --from=builder /cyderes_app/ingestlog .
+ENTRYPOINT ["/cyderes_app/ingestlog"]
