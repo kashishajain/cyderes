@@ -8,11 +8,12 @@ import (
 	"errors"
 )
 
+var apiURL = "https://jsonplaceholder.typicode.com/posts"
+
 func FetchData()([]byte, error){
 	const (
 		retry  = 5
 		timeout = 10 * time.Second
-		apiURL = "https://jsonplaceholder.typicode.com/posts"
 	)
 
 	client := &http.Client{
