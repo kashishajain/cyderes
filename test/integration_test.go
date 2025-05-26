@@ -1,4 +1,4 @@
-package integration
+package integration_test
 
 import (
     "context"
@@ -85,6 +85,9 @@ func StoreToDynamoDB(t *testing.T, data []transformer.Transformed_data, client *
 }
 
 func TestIngestDataToDynamoDB(t *testing.T) {
+    if testing.Short() {
+        t.Skip("Skipping integration test in short mode")
+    }
     os.Setenv("AWS_ACCESS_KEY_ID", "dummy")
     os.Setenv("AWS_SECRET_ACCESS_KEY", "dummy")
     os.Setenv("AWS_REGION", "us-west-2")

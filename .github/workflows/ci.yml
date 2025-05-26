@@ -13,8 +13,9 @@ jobs:
 
       - name: Install dependencies
         run: go mod download
+
       - name: Run tests
-        run: go test ./...
+        run: go test ./... -v -short
 
       - name: Start DynamoDB Local container
         run: |
@@ -22,7 +23,7 @@ jobs:
           sleep 5  # optional: wait for service to initialize
 
       - name: Run integration tests
-        run: go test ./test/...
+        run: go test -v -tags=integration ./test
 
       - name: Stop DynamoDB Local container
         if: always()
