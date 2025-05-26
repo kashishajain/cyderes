@@ -53,11 +53,11 @@ export SECRET_ACCESS_KEY=<secret_access_key>
 ```bash
 docker build -f build/docker/Dockerfile -t cyderes-app:1.1 .
 ```
-### If AWS credentials are configured using env variable
+## If AWS credentials are configured using env variable
 ```bash
 docker run --env AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY cyderes-app:1.1
 ```
-### If AWS credentials are configured using AWS CLI
+## If AWS credentials are configured using AWS CLI
 ```bash
 docker run -v ~/.aws:/root/.aws cyderes-app:1.1
 ```
