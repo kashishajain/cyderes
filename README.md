@@ -30,9 +30,9 @@ This service fetches posts from the JSONPlaceholder API, transforms each record 
 
 * Docker & Docker Compose
 * Go 1.20+
-* AWS CLI (for `aws configure`, optional)
 * Create IAM role configured with required DynamoDB policies (AmazonDynamoDBFullAcess). 
 * AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY
+* AWS CLI (for `aws configure`, optional)
 
 ### 1. Clone & Build
 
@@ -41,7 +41,7 @@ git clone <repo-url>
 cd cyderes
 ```
 
-### 2. Export Env variables
+### 2. Export Env variables 
 
 ```bash
 export ACCESS_KEY_ID=<access_key_id>
@@ -53,10 +53,14 @@ export SECRET_ACCESS_KEY=<secret_access_key>
 ```bash
 docker build -f build/docker/Dockerfile -t cyderes-app:1.1 .
 ```
+### If AWS credentials are configured using env variable
 ```bash
 docker run --env AWS_ACCESS_KEY_ID=$ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY=$SECRET_ACCESS_KEY cyderes-app:1.1
 ```
-
+### If AWS credentials are configured using AWS CLI
+```bash
+docker run -v ~/.aws:/root/.aws cyderes-app:1.1
+```
 ### OR 
 ### Run service using docker-compose.yml
 
